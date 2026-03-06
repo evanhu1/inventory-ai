@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: inventory-ai
+    runtime: node
+    plan: starter
+    buildCommand: npm ci && npm run build
+    startCommand: npm run db:migrate && npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 24.9.0
+      - key: PORT
+        value: 10000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: inventory-ai-db
+          property: connectionString
+      - key: APP_URL
+        sync: false
+      - key: VITE_API_BASE_URL
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_TEXT_MODEL
+        value: claude-sonnet-4-5-20250929
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_IMAGE_MODEL
+        value: gemini-2.5-flash-image
+
+databases:
+  - name: inventory-ai-db
+    plan: basic-256mb
