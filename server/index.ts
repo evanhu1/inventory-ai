@@ -908,7 +908,7 @@ app.post('/api/arena/duel', async (req, res, next) => {
 
 app.use(express.static(clientDistDir))
 
-app.get('*', (req, res, next) => {
+app.get(/^(?!\/api\/).*/, (req, res, next) => {
   if (req.path.startsWith('/api/')) {
     next()
     return
