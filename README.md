@@ -2,6 +2,8 @@
 
 Inventory.ai is a collectible social game built with React, Vite, Tailwind CSS, Express, Clerk, Anthropic, Gemini Flash, and Postgres.
 
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/evanhu1/inventory-ai)
+
 ## What It Includes
 
 - Anonymous public inventory browsing
