@@ -2,23 +2,23 @@ import { useEffect, useState } from 'react'
 import { CardTile } from '../components/CardTile'
 import { useInventoryAuth } from '../lib/auth'
 import { api } from '../lib/api'
-import type { ArenaPayload, DuelPayload } from '../lib/types'
+import type { ArenaResponse, DuelResponse } from '../lib/types'
 
 export function ArenaPage() {
   const auth = useInventoryAuth()
-  const [arena, setArena] = useState<ArenaPayload | null>(null)
-  const [duelResult, setDuelResult] = useState<DuelPayload | null>(null)
-  const [selectedCardIds, setSelectedCardIds] = useState<string[]>([])
+  const [arenaData, setArenaData] = useState<ArenaResponse | null>(null)
+  const [duelResult, setDuelResult] = useState<DuelResponse | null>(null)
+  const [selectedCardIds, setSelectedCardIds] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     void api
-      .arena()
-      .then((response) => setArena(response))
+      .arena(auth.getToken)
+      .then((response) => setArenaData(response))
       .catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Unable to load arena'))
-  }, [])
+  }, [auth.getToken])
 
-  function toggleCard(cardId: string) {
+  function toggleCard(cardId: number) {
     setSelectedCardIds((current) =>
       current.includes(cardId) ? current.filter((id) => id !== cardId) : current.length < 3 ? [...current, cardId] : current,
     )
@@ -37,20 +37,20 @@ export function ArenaPage() {
     <div className="space-y-6">
       <section className="rounded-[32px] border border-orange-300/20 bg-gradient-to-br from-orange-400/18 to-transparent p-8">
         <p className="text-sm uppercase tracking-[0.3em] text-orange-200">Daily Arena Contract</p>
-        <h1 className="mt-4 font-serif text-4xl text-white">{arena?.primaryTrait ?? 'arcane'} Dominion</h1>
-        <p className="mt-3 max-w-3xl text-slate-200">{arena?.summary}</p>
+        <h1 className="mt-4 font-serif text-4xl text-white">{arenaData?.arena.title ?? 'Arena loading'}</h1>
+        <p className="mt-3 max-w-3xl text-slate-200">The arena rewards the right traits, longer names, and a well-timed shiny anchor.</p>
         <div className="mt-6 grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-4">
-            <p className="text-sm text-slate-500">Secondary trait</p>
-            <p className="mt-1 text-2xl text-white">{arena?.secondaryTrait ?? '-'}</p>
+            <p className="text-sm text-slate-500">Wanted traits</p>
+            <p className="mt-1 text-2xl text-white">{arenaData?.arena.wantedTraits.join(' / ') ?? '-'}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-4">
-            <p className="text-sm text-slate-500">Letter bonus</p>
-            <p className="mt-1 text-2xl text-white">{arena?.targetLength ?? '-'}</p>
+            <p className="text-sm text-slate-500">Modifiers</p>
+            <p className="mt-1 text-sm text-white">{arenaData?.arena.modifiers[0] ?? '-'}</p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-slate-950/45 p-4">
-            <p className="text-sm text-slate-500">Sentinel score</p>
-            <p className="mt-1 text-2xl text-white">{arena?.sentinelScore ?? '-'}</p>
+            <p className="text-sm text-slate-500">Reset date</p>
+            <p className="mt-1 text-2xl text-white">{arenaData?.arena.date ?? '-'}</p>
           </div>
         </div>
       </section>
@@ -68,7 +68,7 @@ export function ArenaPage() {
           </div>
           {error && <p className="mt-4 text-rose-300">{error}</p>}
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {arena?.myCards?.map((card) => (
+            {arenaData?.cards.map((card) => (
               <CardTile key={card.id} card={card} selectable selected={selectedCardIds.includes(card.id)} onToggle={toggleCard} />
             ))}
           </div>
@@ -79,24 +79,9 @@ export function ArenaPage() {
 
       {duelResult && (
         <section className="rounded-[32px] border border-white/10 bg-slate-950/60 p-8">
-          <h2 className="font-serif text-3xl text-white">Duel Result: {duelResult.result}</h2>
-          <p className="mt-2 text-slate-300">
-            You scored {duelResult.totalScore} against a target of {duelResult.targetScore}.
-          </p>
-          <div className="mt-6 space-y-3">
-            {duelResult.cardBreakdown.map((entry) => (
-              <div key={entry.card.id} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 px-4 py-3">
-                <div>
-                  <p className="text-lg text-white">{entry.card.word}</p>
-                  <p className="text-sm text-slate-400">{entry.card.tags.join(' • ')}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xl text-orange-200">{entry.score}</p>
-                  <p className="text-sm text-slate-400">bonus +{entry.bonus}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <h2 className="font-serif text-3xl text-white">Duel Result: {duelResult.verdict}</h2>
+          <p className="mt-2 text-slate-300">You scored {duelResult.score} against a target of {duelResult.threshold}.</p>
+          <p className="mt-6 rounded-2xl border border-white/8 bg-white/4 px-4 py-3 text-slate-200">{duelResult.summary}</p>
         </section>
       )}
     </div>

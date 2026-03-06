@@ -1,41 +1,37 @@
 export type BootstrapPayload = {
-  integrations: {
-    clerkEnabled: boolean
-    anthropicEnabled: boolean
-    googleGenAiEnabled: boolean
-  }
+  authEnabled: boolean
   arena: ArenaPayload
-  leaderboard: LeaderboardEntry[]
-  recentCrafts: {
-    username: string
-    word: string
-    serial_number: number
-    shiny: boolean
-    crafted_at: string
-  }[]
-  me: {
+  leaderboardPreview: LeaderboardEntry[]
+  recentDrops: Card[]
+  stats: {
+    collectors: number
+    live_cards: number
+    unique_items: number
+    trades_completed: number
+  }
+  viewer: {
     username: string
     craftsRemaining: number
     referralCode: string
-    inventoryCount: number
+    totalReferrals: number
   } | null
 }
 
 export type Card = {
-  id: string
-  word: string
-  serialNumber: number
-  shiny: boolean
-  isFusion: boolean
+  id: number
+  itemName: string
+  normalizedName: string
+  editionNumber: number
+  isShiny: boolean
+  sourceType: string
   ingredients: string[]
   previousOwners: string[]
   craftedAt: string
-  power: number
   flavorText: string
   imageUrl: string
-  tags: string[]
-  ownerUsername: string
-  craftedByUsername: string
+  traits: string[]
+  owner: string
+  craftedBy: string
 }
 
 export type InventoryPayload = {
@@ -43,18 +39,26 @@ export type InventoryPayload = {
     username: string
     craftsRemaining: number
     referralCode: string
-    createdAt: string
+    totalReferrals: number
+    joinedAt: string
+    itemCount: number
   }
   cards: Card[]
 }
 
 export type TradeOffer = {
-  id: string
+  id: number
   status: string
-  isGift: boolean
+  kind: string
   message: string
-  offeredCardIds: string[]
-  requestedCardIds: string[]
+  cards: {
+    id: number
+    side: string
+    itemName: string
+    editionNumber: number
+    isShiny: boolean
+    imageUrl: string
+  }[]
   createdAt: string
   fromUsername: string
   toUsername: string
@@ -70,23 +74,22 @@ export type LeaderboardEntry = {
 }
 
 export type ArenaPayload = {
-  season: string
-  primaryTrait: string
-  secondaryTrait: string
-  targetLength: number
-  sentinelScore: number
-  summary: string
-  myCards?: Card[]
+  date: string
+  title: string
+  modifiers: string[]
+  wantedTraits: string[]
 }
 
-export type DuelPayload = {
+export type ArenaResponse = {
   arena: ArenaPayload
-  totalScore: number
-  result: 'victory' | 'defeat'
-  targetScore: number
-  cardBreakdown: {
-    card: Card
-    score: number
-    bonus: number
-  }[]
+  cards: Card[]
+  recommendedCards: Card[]
+}
+
+export type DuelResponse = {
+  verdict: 'win' | 'loss'
+  score: number
+  threshold: number
+  arena: ArenaPayload
+  summary: string
 }

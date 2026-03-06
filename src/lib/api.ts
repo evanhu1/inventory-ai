@@ -1,4 +1,4 @@
-import type { ArenaPayload, BootstrapPayload, DuelPayload, InventoryPayload, LeaderboardEntry, TradeOffer } from './types'
+import type { ArenaResponse, BootstrapPayload, DuelResponse, InventoryPayload, LeaderboardEntry, TradeOffer } from './types'
 
 type TokenProvider = (() => Promise<string | null>) | null
 
@@ -30,20 +30,24 @@ export const api = {
   bootstrap: () => request<BootstrapPayload>('/api/bootstrap'),
   inventory: (username: string) => request<InventoryPayload>(`/api/inventories/${username}`),
   createProfile: (input: { username: string; referralCode?: string }, getToken: TokenProvider) =>
-    request<{ username: string }>('/api/me/profile', { method: 'POST', body: JSON.stringify(input) }, getToken),
+    request<{ username: string; craftsRemaining: number; referralCode: string; totalReferrals: number }>(
+      '/api/me/profile',
+      { method: 'POST', body: JSON.stringify(input) },
+      getToken,
+    ),
   craft: (word: string, getToken: TokenProvider) =>
-    request<{ inventory: InventoryPayload }>('/api/craft', { method: 'POST', body: JSON.stringify({ word }) }, getToken),
-  fuse: (word: string, cardIds: string[], getToken: TokenProvider) =>
-    request<{ inventory: InventoryPayload }>('/api/fuse', { method: 'POST', body: JSON.stringify({ word, cardIds }) }, getToken),
+    request<{ card: InventoryPayload['cards'][number] }>('/api/craft', { method: 'POST', body: JSON.stringify({ word }) }, getToken),
+  fuse: (cardIds: number[], getToken: TokenProvider) =>
+    request<{ card: InventoryPayload['cards'][number] }>('/api/fuse', { method: 'POST', body: JSON.stringify({ cardIds }) }, getToken),
   inbox: (getToken: TokenProvider) => request<{ offers: TradeOffer[] }>('/api/trades/inbox', {}, getToken),
   createTrade: (
-    input: { toUsername: string; offeredCardIds: string[]; requestedCardIds: string[]; message?: string },
+    input: { targetUsername: string; offeredCardIds: number[]; requestedCardIds: number[]; message?: string },
     getToken: TokenProvider,
-  ) => request<{ id: string }>('/api/trades/offers', { method: 'POST', body: JSON.stringify(input) }, getToken),
-  respondTrade: (id: string, action: 'accept' | 'reject', getToken: TokenProvider) =>
-    request<{ status: string }>(`/api/trades/${id}/respond`, { method: 'POST', body: JSON.stringify({ action }) }, getToken),
-  leaderboard: () => request<{ players: LeaderboardEntry[] }>('/api/leaderboard'),
-  arena: () => request<ArenaPayload>('/api/arena'),
-  duel: (selectedCardIds: string[], getToken: TokenProvider) =>
-    request<DuelPayload>('/api/arena/duel', { method: 'POST', body: JSON.stringify({ selectedCardIds }) }, getToken),
+  ) => request<{ offerId: number }>('/api/trades/offers', { method: 'POST', body: JSON.stringify(input) }, getToken),
+  respondTrade: (id: number, action: 'accepted' | 'rejected', getToken: TokenProvider) =>
+    request<{ ok: boolean }>(`/api/trades/${id}/respond`, { method: 'POST', body: JSON.stringify({ action }) }, getToken),
+  leaderboard: () => request<{ leaderboard: LeaderboardEntry[] }>('/api/leaderboard'),
+  arena: (getToken?: TokenProvider) => request<ArenaResponse>('/api/arena', {}, getToken ?? null),
+  duel: (cardIds: number[], getToken: TokenProvider) =>
+    request<DuelResponse>('/api/arena/duel', { method: 'POST', body: JSON.stringify({ cardIds }) }, getToken),
 }

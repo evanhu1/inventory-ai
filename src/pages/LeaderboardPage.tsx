@@ -10,14 +10,14 @@ export function LeaderboardPage() {
   useEffect(() => {
     void api
       .leaderboard()
-      .then((response) => setPlayers(response.players))
+      .then((response) => setPlayers(response.leaderboard))
       .catch((loadError) => setError(loadError instanceof Error ? loadError.message : 'Unable to load leaderboard'))
   }, [])
 
   return (
     <section className="rounded-[32px] border border-white/10 bg-slate-950/60 p-8">
       <h1 className="font-serif text-4xl text-white">Global Leaderboard</h1>
-      <p className="mt-3 text-slate-300">Collectors are ranked by what they currently hold, then by shiny ownership and total crafting output.</p>
+      <p className="mt-3 text-slate-300">Collectors are ranked by what they currently hold, then by shiny ownership and best arena score.</p>
       {error && <p className="mt-4 text-rose-300">{error}</p>}
       <div className="mt-8 space-y-4">
         {players.map((player) => (
@@ -34,12 +34,12 @@ export function LeaderboardPage() {
               <p className="mt-1 text-xl text-white">{player.itemCount}</p>
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Crafted</p>
-              <p className="mt-1 text-xl text-white">{player.craftedCount ?? 0}</p>
-            </div>
-            <div>
               <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Shiny</p>
               <p className="mt-1 text-xl text-white">{player.shinyCount ?? 0}</p>
+            </div>
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Best duel</p>
+              <p className="mt-1 text-xl text-white">{player.bestDuelScore ?? 0}</p>
             </div>
           </div>
         ))}

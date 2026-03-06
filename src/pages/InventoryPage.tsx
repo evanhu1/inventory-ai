@@ -15,20 +15,19 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
   const [profileUsername, setProfileUsername] = useState('')
   const [referralCode, setReferralCode] = useState('')
   const [craftWord, setCraftWord] = useState('')
-  const [fusionWord, setFusionWord] = useState('')
-  const [selectedFuseCards, setSelectedFuseCards] = useState<string[]>([])
+  const [selectedFuseCards, setSelectedFuseCards] = useState<number[]>([])
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     async function load() {
-      if (!bootstrap?.me?.username) {
+      if (!bootstrap?.viewer?.username) {
         setInventory(null)
         return
       }
 
       try {
-        const nextInventory = await api.inventory(bootstrap.me.username)
+        const nextInventory = await api.inventory(bootstrap.viewer.username)
         setInventory(nextInventory)
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Unable to load inventory')
@@ -36,7 +35,7 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
     }
 
     void load()
-  }, [bootstrap?.me?.username])
+  }, [bootstrap?.viewer?.username])
 
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -57,8 +56,10 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
     setError(null)
     setStatus('Crafting new artifact…')
     try {
-      const response = await api.craft(craftWord, auth.getToken)
-      setInventory(response.inventory)
+      await api.craft(craftWord, auth.getToken)
+      if (bootstrap?.viewer?.username) {
+        setInventory(await api.inventory(bootstrap.viewer.username))
+      }
       setCraftWord('')
       setStatus('Card crafted.')
       await refreshBootstrap()
@@ -73,9 +74,10 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
     setError(null)
     setStatus('Binding selected cards…')
     try {
-      const response = await api.fuse(fusionWord, selectedFuseCards, auth.getToken)
-      setInventory(response.inventory)
-      setFusionWord('')
+      await api.fuse(selectedFuseCards, auth.getToken)
+      if (bootstrap?.viewer?.username) {
+        setInventory(await api.inventory(bootstrap.viewer.username))
+      }
       setSelectedFuseCards([])
       setStatus('Fusion completed.')
       await refreshBootstrap()
@@ -85,7 +87,7 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
     }
   }
 
-  function toggleCard(cardId: string) {
+  function toggleCard(cardId: number) {
     setSelectedFuseCards((current) =>
       current.includes(cardId) ? current.filter((id) => id !== cardId) : current.length < 3 ? [...current, cardId] : current,
     )
@@ -101,7 +103,7 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
 
   return (
     <div className="space-y-6">
-      {!bootstrap?.me ? (
+      {!bootstrap?.viewer ? (
         <section className="rounded-[28px] border border-white/10 bg-slate-950/60 p-8">
           <h1 className="font-serif text-3xl text-white">Claim your collector identity</h1>
           <p className="mt-3 max-w-2xl text-slate-300">Choose a unique username. Every craft, trade, and duel win will attach to it.</p>
@@ -129,18 +131,19 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
             <div className="rounded-[28px] border border-white/10 bg-slate-950/60 p-8">
               <p className="text-sm uppercase tracking-[0.3em] text-orange-200">Collector Profile</p>
               <h1 className="mt-4 font-serif text-4xl text-white">@{bootstrap.me.username}</h1>
+              <h1 className="mt-4 font-serif text-4xl text-white">@{bootstrap.viewer.username}</h1>
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
                   <p className="text-sm text-slate-500">Cards held</p>
-                  <p className="mt-1 text-3xl text-white">{inventory?.cards.length ?? bootstrap.me.inventoryCount}</p>
+                  <p className="mt-1 text-3xl text-white">{inventory?.cards.length ?? inventory?.profile.itemCount ?? 0}</p>
                 </div>
                 <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
                   <p className="text-sm text-slate-500">Crafts left</p>
-                  <p className="mt-1 text-3xl text-white">{inventory?.profile.craftsRemaining ?? bootstrap.me.craftsRemaining}</p>
+                  <p className="mt-1 text-3xl text-white">{inventory?.profile.craftsRemaining ?? bootstrap.viewer.craftsRemaining}</p>
                 </div>
                 <div className="rounded-2xl border border-white/8 bg-white/4 p-4">
                   <p className="text-sm text-slate-500">Referral code</p>
-                  <p className="mt-1 text-xl text-white">{bootstrap.me.referralCode}</p>
+                  <p className="mt-1 text-xl text-white">{bootstrap.viewer.referralCode}</p>
                 </div>
               </div>
             </div>
@@ -169,12 +172,6 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
                 <p className="mt-2 text-slate-300">Choose 2-3 cards you own. The originals will be destroyed when the new fusion card is minted.</p>
               </div>
               <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleFusion}>
-                <input
-                  value={fusionWord}
-                  onChange={(event) => setFusionWord(event.target.value)}
-                  placeholder="new fused word"
-                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-slate-500"
-                />
                 <button className="rounded-2xl border border-orange-300/40 bg-orange-400/20 px-5 py-3 text-orange-100">Fuse selected</button>
               </form>
             </div>

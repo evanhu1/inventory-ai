@@ -39,7 +39,7 @@ export function TradesPage() {
     }
   }, [auth.getToken, auth.isSignedIn])
 
-  async function respond(id: string, action: 'accept' | 'reject') {
+  async function respond(id: number, action: 'accepted' | 'rejected') {
     setError(null)
     try {
       await api.respondTrade(id, action, auth.getToken)
@@ -65,24 +65,31 @@ export function TradesPage() {
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-slate-500">{offer.status}</p>
                 <p className="mt-1 text-xl text-white">
-                  {offer.fromUsername} {offer.isGift ? 'gifted' : 'offered'} {offer.offeredCardIds.length} card(s)
+                  {offer.fromUsername} {offer.kind === 'gift' ? 'gifted' : 'offered'} {offer.cards.filter((card) => card.side === 'offered').length} card(s)
                 </p>
                 <p className="mt-1 text-sm text-slate-400">
-                  Wants {offer.requestedCardIds.length} card(s) from {offer.toUsername}. Sent {new Date(offer.createdAt).toLocaleString()}.
+                  Wants {offer.cards.filter((card) => card.side === 'requested').length} card(s) from {offer.toUsername}. Sent {new Date(offer.createdAt).toLocaleString()}.
                 </p>
               </div>
               {offer.status === 'pending' && (
                 <div className="flex gap-3">
-                  <button className="rounded-2xl border border-white/10 px-4 py-2 text-white" onClick={() => void respond(offer.id, 'reject')}>
+                  <button className="rounded-2xl border border-white/10 px-4 py-2 text-white" onClick={() => void respond(offer.id, 'rejected')}>
                     Reject
                   </button>
-                  <button className="rounded-2xl bg-orange-400 px-4 py-2 font-medium text-slate-950" onClick={() => void respond(offer.id, 'accept')}>
+                  <button className="rounded-2xl bg-orange-400 px-4 py-2 font-medium text-slate-950" onClick={() => void respond(offer.id, 'accepted')}>
                     Accept
                   </button>
                 </div>
               )}
             </div>
             {offer.message && <p className="mt-4 rounded-2xl border border-white/8 bg-slate-950/50 px-4 py-3 text-slate-300">{offer.message}</p>}
+            <div className="mt-4 flex flex-wrap gap-2">
+              {offer.cards.map((card) => (
+                <span key={`${offer.id}-${card.id}-${card.side}`} className="rounded-full border border-white/10 px-3 py-1 text-xs text-slate-300">
+                  {card.side}: {card.itemName} #{card.editionNumber}
+                </span>
+              ))}
+            </div>
           </div>
         ))}
       </div>

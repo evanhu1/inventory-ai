@@ -14,8 +14,8 @@ export function PublicInventoryPage({ bootstrap }: PublicInventoryPageProps) {
   const auth = useInventoryAuth()
   const [inventory, setInventory] = useState<InventoryPayload | null>(null)
   const [myInventory, setMyInventory] = useState<InventoryPayload | null>(null)
-  const [selectedOfferedCards, setSelectedOfferedCards] = useState<string[]>([])
-  const [selectedRequestedCards, setSelectedRequestedCards] = useState<string[]>([])
+  const [selectedOfferedCards, setSelectedOfferedCards] = useState<number[]>([])
+  const [selectedRequestedCards, setSelectedRequestedCards] = useState<number[]>([])
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -24,8 +24,8 @@ export function PublicInventoryPage({ bootstrap }: PublicInventoryPageProps) {
     async function load() {
       try {
         setInventory(await api.inventory(username))
-        if (bootstrap?.me?.username) {
-          setMyInventory(await api.inventory(bootstrap.me.username))
+        if (bootstrap?.viewer?.username) {
+          setMyInventory(await api.inventory(bootstrap.viewer.username))
         }
       } catch (loadError) {
         setError(loadError instanceof Error ? loadError.message : 'Unable to load inventory')
@@ -33,15 +33,15 @@ export function PublicInventoryPage({ bootstrap }: PublicInventoryPageProps) {
     }
 
     void load()
-  }, [bootstrap?.me?.username, username])
+  }, [bootstrap?.viewer?.username, username])
 
-  function toggleOffered(cardId: string) {
+  function toggleOffered(cardId: number) {
     setSelectedOfferedCards((current) =>
       current.includes(cardId) ? current.filter((id) => id !== cardId) : [...current, cardId],
     )
   }
 
-  function toggleRequested(cardId: string) {
+  function toggleRequested(cardId: number) {
     setSelectedRequestedCards((current) =>
       current.includes(cardId) ? current.filter((id) => id !== cardId) : [...current, cardId],
     )
@@ -54,7 +54,7 @@ export function PublicInventoryPage({ bootstrap }: PublicInventoryPageProps) {
     try {
       await api.createTrade(
         {
-          toUsername: username,
+          targetUsername: username,
           offeredCardIds: selectedOfferedCards,
           requestedCardIds: selectedRequestedCards,
           message,
@@ -86,7 +86,7 @@ export function PublicInventoryPage({ bootstrap }: PublicInventoryPageProps) {
         ))}
       </section>
 
-      {auth.isSignedIn && bootstrap?.me && bootstrap.me.username !== username && (
+      {auth.isSignedIn && bootstrap?.viewer && bootstrap.viewer.username !== username && (
         <section className="rounded-[28px] border border-orange-300/20 bg-white/6 p-8">
           <h2 className="font-serif text-3xl text-white">Propose a Trade</h2>
           <p className="mt-3 text-slate-300">Select their cards above, then choose what you want to offer from your own vault below. Leave requested cards empty to send a gift.</p>

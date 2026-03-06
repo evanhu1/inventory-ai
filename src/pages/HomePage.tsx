@@ -30,16 +30,16 @@ export function HomePage({ data, loading }: HomePageProps) {
 
         <div className="rounded-[32px] border border-orange-300/20 bg-gradient-to-br from-orange-400/15 to-transparent p-6">
           <p className="text-sm uppercase tracking-[0.3em] text-orange-200">Today&apos;s Arena</p>
-          <p className="mt-4 text-3xl font-semibold text-white">{data?.arena.primaryTrait ?? 'arcane'} Ascendant</p>
-          <p className="mt-3 text-slate-300">{data?.arena.summary ?? 'Loading the active modifiers.'}</p>
+          <p className="mt-4 text-3xl font-semibold text-white">{data?.arena.title ?? 'Arena loading'}</p>
+          <p className="mt-3 text-slate-300">A rotating ruleset rewards collectors who can field the right traits and word profiles.</p>
           <div className="mt-6 grid grid-cols-2 gap-3 text-sm">
             <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-              <p className="text-slate-500">Target length</p>
-              <p className="mt-1 text-2xl text-white">{data?.arena.targetLength ?? '-'}</p>
+              <p className="text-slate-500">Wanted traits</p>
+              <p className="mt-1 text-2xl text-white">{data?.arena.wantedTraits.join(' / ') ?? '-'}</p>
             </div>
             <div className="rounded-2xl border border-white/10 bg-slate-950/40 p-4">
-              <p className="text-slate-500">Sentinel score</p>
-              <p className="mt-1 text-2xl text-white">{data?.arena.sentinelScore ?? '-'}</p>
+              <p className="text-slate-500">Live cards</p>
+              <p className="mt-1 text-2xl text-white">{data?.stats.live_cards ?? '-'}</p>
             </div>
           </div>
         </div>
@@ -55,7 +55,7 @@ export function HomePage({ data, loading }: HomePageProps) {
           </div>
           <div className="mt-5 space-y-3">
             {loading && <p className="text-slate-400">Loading leaderboard…</p>}
-            {data?.leaderboard.map((entry) => (
+            {data?.leaderboardPreview.map((entry) => (
               <div key={entry.username} className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/4 px-4 py-3">
                 <div>
                   <p className="text-xs uppercase tracking-[0.24em] text-slate-500">Rank {entry.rank}</p>
@@ -76,15 +76,15 @@ export function HomePage({ data, loading }: HomePageProps) {
           <h2 className="font-serif text-2xl">Recent Crafts</h2>
           <div className="mt-5 space-y-3">
             {loading && <p className="text-slate-400">Loading recent crafts…</p>}
-            {data?.recentCrafts.map((entry) => (
-              <div key={`${entry.username}-${entry.crafted_at}-${entry.word}`} className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3">
+            {data?.recentDrops.map((entry) => (
+              <div key={`${entry.owner}-${entry.craftedAt}-${entry.itemName}`} className="rounded-2xl border border-white/8 bg-white/4 px-4 py-3">
                 <p className="text-lg text-white">
-                  {entry.word} <span className="text-slate-500">#{entry.serial_number}</span>
+                  {entry.itemName} <span className="text-slate-500">#{entry.editionNumber}</span>
                 </p>
                 <p className="mt-1 text-sm text-slate-400">
-                  Crafted by <Link to={`/u/${entry.username}`} className="text-orange-200">{entry.username}</Link> on{' '}
-                  {new Date(entry.crafted_at).toLocaleDateString()}
-                  {entry.shiny ? ' as the shiny first edition' : ''}
+                  Crafted by <Link to={`/u/${entry.owner}`} className="text-orange-200">{entry.owner}</Link> on{' '}
+                  {new Date(entry.craftedAt).toLocaleDateString()}
+                  {entry.isShiny ? ' as the shiny first edition' : ''}
                 </p>
               </div>
             ))}
