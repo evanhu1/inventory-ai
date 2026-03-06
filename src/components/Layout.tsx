@@ -1,5 +1,5 @@
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { SignInButton, UserButton } from '@clerk/react'
+import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
 import { useInventoryAuth } from '../lib/auth'
 
 const navItems = [
@@ -37,15 +37,21 @@ export function Layout() {
             <div className="flex items-center gap-3">
               {auth.clerkAvailable ? (
                 <>
-                  {!auth.isSignedIn ? (
+                  <Show when="signed-out">
                     <SignInButton mode="modal">
                       <button className="rounded-full bg-orange-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-orange-300">
-                        Sign in with Google
+                        Sign in
                       </button>
                     </SignInButton>
-                  ) : (
+                    <SignUpButton mode="modal">
+                      <button className="rounded-full border border-white/15 px-4 py-2 text-sm text-slate-100 transition hover:bg-white/10">
+                        Sign up
+                      </button>
+                    </SignUpButton>
+                  </Show>
+                  <Show when="signed-in">
                     <UserButton />
-                  )}
+                  </Show>
                 </>
               ) : (
                 <span className="rounded-full border border-white/10 px-3 py-2 text-xs text-slate-300">
