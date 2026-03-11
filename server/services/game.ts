@@ -1,10 +1,10 @@
 import { randomUUID } from 'node:crypto'
 import type { Request } from 'express'
 import { getAuth } from '@clerk/express'
-import { sql } from '../db.js'
-import { AppError, assert } from '../lib/errors.js'
-import { integrations } from '../config.js'
-import { buildCardContent, validateSingleWord } from './content.js'
+import { sql } from '../db'
+import { AppError, assert } from '../lib/errors'
+import { integrations } from '../config'
+import { buildCardContent, validateSingleWord } from './content'
 
 type DbUser = {
   id: string

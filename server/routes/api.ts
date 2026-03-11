@@ -11,7 +11,7 @@ import {
   getTradeInbox,
   respondToTrade,
   upsertProfile,
-} from '../services/game.js'
+} from '../services/game'
 
 export const apiRouter = Router()
 

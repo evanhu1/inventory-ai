@@ -1,5 +1,7 @@
+'use client'
+
 import { Link, NavLink, Outlet } from 'react-router-dom'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import { useInventoryAuth } from '../lib/auth'
 
 const navItems = [
@@ -37,7 +39,7 @@ export function Layout() {
             <div className="flex items-center gap-3">
               {auth.clerkAvailable ? (
                 <>
-                  <Show when="signed-out">
+                  <SignedOut>
                     <SignInButton mode="modal">
                       <button className="rounded-full bg-orange-400 px-4 py-2 text-sm font-medium text-slate-950 transition hover:bg-orange-300">
                         Sign in
@@ -48,10 +50,10 @@ export function Layout() {
                         Sign up
                       </button>
                     </SignUpButton>
-                  </Show>
-                  <Show when="signed-in">
+                  </SignedOut>
+                  <SignedIn>
                     <UserButton />
-                  </Show>
+                  </SignedIn>
                 </>
               ) : (
                 <span className="rounded-full border border-white/10 px-3 py-2 text-xs text-slate-300">

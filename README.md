@@ -1,8 +1,6 @@
 # Inventory.ai
 
-Inventory.ai is a collectible social game built with React, Vite, Tailwind CSS, Express, Clerk, Anthropic, Gemini Flash, and Postgres.
-
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/evanhu1/inventory-ai)
+Inventory.ai is a collectible social game built with Next.js, React, Clerk, Anthropic, Gemini Flash, and Postgres.
 
 ## What It Includes
 
@@ -15,17 +13,17 @@ Inventory.ai is a collectible social game built with React, Vite, Tailwind CSS, 
 - Direct trading and gifting
 - Global inventory leaderboard
 - Daily arena duel system that rewards trait-focused collecting
-- Render deployment blueprint with managed Postgres
+- Vercel deployment with Neon Postgres integration
 
 ## Local Setup
 
 1. Copy `.env.example` to `.env`.
-2. Fill in `DATABASE_URL`, `VITE_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `ANTHROPIC_API_KEY`, and `GEMINI_API_KEY`.
+2. Fill in `DATABASE_URL`, `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `ANTHROPIC_API_KEY`, and `GEMINI_API_KEY`.
 3. Run `npm install`.
 4. Run `npm run db:migrate`.
 5. Run `npm run dev`.
 
-The frontend runs on `http://localhost:5173` and proxies API requests to the Express server on `http://localhost:8787`.
+The app runs on `http://localhost:3000`.
 
 For a disposable local database on this machine:
 
@@ -37,23 +35,21 @@ npm run dev
 
 ## Scripts
 
-- `npm run dev` starts Vite and the Express API together
-- `npm run build` builds the client and server
-- `npm run start` runs the compiled production server
+- `npm run dev` starts the Next.js app
+- `npm run build` builds the Next.js app
+- `npm run start` runs the built Next.js app
 - `npm run db:migrate` applies SQL migrations
 
 ## Deployment
 
-`render.yaml` provisions:
+Deploy on Vercel and attach a Neon Postgres database from the Vercel Marketplace.
 
-- One Node web service
-- One managed Postgres database
+Set these project environment variables in Vercel:
 
-Set the remaining secrets in Render:
-
-- `APP_URL`
-- `VITE_API_BASE_URL`
-- `VITE_CLERK_PUBLISHABLE_KEY`
+- `DATABASE_URL` or `POSTGRES_URL`
+- `DATABASE_URL_UNPOOLED` or `POSTGRES_URL_NON_POOLING`
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
 - `ANTHROPIC_API_KEY`
 - `GEMINI_API_KEY`

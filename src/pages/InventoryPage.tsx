@@ -130,7 +130,6 @@ export function InventoryPage({ bootstrap, refreshBootstrap }: InventoryPageProp
           <section className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
             <div className="rounded-[28px] border border-white/10 bg-slate-950/60 p-8">
               <p className="text-sm uppercase tracking-[0.3em] text-orange-200">Collector Profile</p>
-              <h1 className="mt-4 font-serif text-4xl text-white">@{bootstrap.me.username}</h1>
               <h1 className="mt-4 font-serif text-4xl text-white">@{bootstrap.viewer.username}</h1>
               <div className="mt-6 grid gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-white/8 bg-white/4 p-4">

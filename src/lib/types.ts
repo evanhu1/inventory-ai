@@ -70,6 +70,7 @@ export type LeaderboardEntry = {
   itemCount: number
   craftedCount?: number
   shinyCount?: number
+  bestDuelScore?: number
   craftsRemaining?: number
 }
 

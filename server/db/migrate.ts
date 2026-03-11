@@ -1,10 +1,23 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { sql } from './client.js'
+import postgres from 'postgres'
+import { env } from '../env'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const migrationsDir = path.resolve(__dirname, '../../migrations')
+const migrationUrl = env.databaseUrlUnpooled || env.databaseUrl
+
+if (!migrationUrl) {
+  throw new Error('DATABASE_URL is required')
+}
+
+const sql = postgres(migrationUrl, {
+  max: 1,
+  idle_timeout: 20,
+  connect_timeout: 20,
+  prepare: false,
+})
 
 const main = async () => {
   await sql`

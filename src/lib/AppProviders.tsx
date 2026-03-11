@@ -1,7 +1,10 @@
-import { useAuth } from '@clerk/react'
+'use client'
+
+import { useAuth } from '@clerk/nextjs'
 import { BrowserRouter } from 'react-router-dom'
 import type { PropsWithChildren } from 'react'
 import { AuthContext } from './auth'
+
 function AuthBoundProviders({ children }: PropsWithChildren) {
   const { isSignedIn, getToken } = useAuth()
 
@@ -21,7 +24,7 @@ function LocalProviders({ children }: PropsWithChildren) {
 }
 
 export function AppProviders({ children }: PropsWithChildren) {
-  if (!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY) {
+  if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
     return <LocalProviders>{children}</LocalProviders>
   }
 

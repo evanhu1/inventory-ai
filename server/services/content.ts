@@ -3,7 +3,7 @@ import { GoogleGenAI, Modality } from '@google/genai'
 import words from 'an-array-of-english-words/index.json' with { type: 'json' }
 import { Filter } from 'bad-words'
 import { randomUUID } from 'node:crypto'
-import { config, integrations } from '../config.js'
+import { config, integrations } from '../config'
 
 const filter = new Filter()
 const lexicon = new Set((words as string[]).map((word) => word.toLowerCase()))

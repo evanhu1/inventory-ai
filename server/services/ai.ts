@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenAI } from '@google/genai'
-import { env } from '../env.js'
+import { env } from '../env'
 
 type CardCreative = {
   cardName: string
