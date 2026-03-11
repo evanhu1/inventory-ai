@@ -1,17 +1,26 @@
 import type { Metadata } from 'next'
 import { ClerkProvider } from '@clerk/nextjs'
-import '../src/index.css'
+import '@/app/globals.css'
+import { Shell } from '@/components/Shell'
+import { AppProviders } from '@/lib/providers'
+import { BootstrapProvider } from '@/lib/bootstrap'
 
 export const metadata: Metadata = {
   title: 'Inventory.ai',
-  description: 'Collectible social game for crafting, trading, and dueling word-based artifacts.',
+  description: 'Forge unique trading cards from words. Fuse, trade, and duel.',
 }
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <ClerkProvider afterSignOutUrl="/">
       <html lang="en">
-        <body>{children}</body>
+        <body>
+          <AppProviders>
+            <BootstrapProvider>
+              <Shell>{children}</Shell>
+            </BootstrapProvider>
+          </AppProviders>
+        </body>
       </html>
     </ClerkProvider>
   )

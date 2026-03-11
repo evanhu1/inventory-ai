@@ -1,6 +1,6 @@
 # Inventory.ai
 
-Inventory.ai is a collectible social game built with Next.js, React, Clerk, Anthropic, Gemini Flash, and Postgres.
+Inventory.ai is a collectible social game built with Next.js App Router, Clerk, Anthropic, Gemini Flash, and Neon Postgres on Vercel.
 
 ## What It Includes
 
@@ -43,6 +43,14 @@ npm run dev
 ## Deployment
 
 Deploy on Vercel and attach a Neon Postgres database from the Vercel Marketplace.
+
+Current structure:
+
+- `app/` contains the user-facing pages and API route handlers
+- `src/components/` contains reusable UI components
+- `src/views/` contains page-level client components used by `app/`
+- `src/server/` contains database access, game logic, and route error helpers
+- `scripts/migrate.ts` applies SQL migrations
 
 Set these project environment variables in Vercel:
 
